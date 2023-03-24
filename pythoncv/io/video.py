@@ -1,3 +1,4 @@
+import os
 from abc import ABCMeta, abstractmethod
 from typing import Union, Literal
 
@@ -117,3 +118,44 @@ class Video(BaseVideo):
 
     def __del__(self):
         self._cap.release()
+
+
+def read_video_from_device(
+    device: int,
+    backend: CaptureBackends = "auto",
+) -> Video:
+    if isinstance(device, str):
+        device = int(device)
+    elif not isinstance(device, int):
+        raise TypeError(f"device must be an int or str, not {type(device)}")
+
+    if device < 0:
+        raise ValueError(f"device must be a positive integer, not {device}")
+
+    return Video(device, backend=backend)
+
+
+def read_video_from_file(
+    path: os.PathLike,
+    backend: CaptureBackends = "auto",
+) -> Video:
+    if not isinstance(path, str):
+        try:
+            path = str(path)
+        except Exception as e:
+            raise TypeError(f"path must be a string, not {type(path)}") from e
+
+    if not os.path.isfile(path):
+        raise FileNotFoundError(f"file {path} not found")
+
+    return Video(path, backend=backend)
+
+
+def read_video_from_url(
+    url: str,
+    backend: CaptureBackends = "auto",
+) -> Video:
+    if not isinstance(url, str):
+        raise TypeError(f"url must be a string, not {type(url)}")
+
+    return Video(url, backend=backend)
