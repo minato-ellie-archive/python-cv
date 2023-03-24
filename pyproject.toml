@@ -1,0 +1,35 @@
+[tool.yapf]
+based_on_style = "google"
+indent_width = 4
+
+[tool.poetry]
+name = "pythonic_vision"
+version = "0.1.0"
+description = ""
+authors = ["Minato <82735346+minato-ellie@users.noreply.github.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{ include = "pythoncv" }]
+include = ["pythonic_vision/docs"]
+
+[tool.poetry.dependencies]
+python = "^3.8.1,<3.11"
+typer = "^0.4.0"
+opencv-python = "^4.7.0.72"
+pydantic = "^1.10.7"
+
+[tool.poetry.group.dev.dependencies]
+nox = "^2022.11.21"
+pytest = "^7.2.1"
+coverage = "^7.2.1"
+pytest-cov = "^4.0.0"
+yapf = "^0.32.0"
+flake8 = "^6.0.0"
+pdoc = "^13.0.0"
+pre-commit = "^3.1.1"
+isort = "^5.12.0"
+mypy = "^1.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
