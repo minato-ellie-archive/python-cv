@@ -296,3 +296,110 @@ def read_video_from_url(
 
     return Video(url, backend=backend)
 
+
+class BaseVideoWriter(metaclass=ABCMeta):
+    """
+    Base class for video writer.
+
+    Notes:
+        Image in pythoncv shoule be a numpy.ndarray object, which has the shape of (height, width, channel).
+        The channel of the image is RGB, which is different from the channel of the image in OpenCV,
+        but the same as the channel of the image in PIL and Tensorflow.
+
+    Args:
+        path: Path to the video file.
+        fps: Frames per second.
+        frame_size: Size of the video frame.
+        is_color: Whether the video is color or not.
+
+    Methods:
+        write: Write a frame to the video.
+    """
+
+    @abstractmethod
+    def write(self, frame: np.ndarray):
+        """
+        Write a frame to the video.
+
+        Args:
+            frame: Frame to write.
+
+        Raises:
+            TypeError: If frame is not a numpy.ndarray object.
+            ValueError: If the shape of frame is not (height, width, channel).
+        """
+        ...
+
+
+class VideoWriter(BaseVideoWriter):
+    """
+    Pythonic API for video writer.
+
+    Notes:
+        OpenCV VideoWriter will be released automatically when the VideoWriter object is deleted,
+        by using the GC mechanism.
+
+    Args:
+        path: Path to the video file.
+        fps: Frames per second.
+        frame_size: Size of the video frame.
+        is_color: Whether the video is color or not.
+        backend: Backend to use for writing video.
+            If backend is "auto", the backend will be chosen automatically.
+            If backend is "opencv", the backend will be OpenCV.
+            If backend is "ffmpeg", the backend will be ffmpeg.
+            If backend is "gstreamer", the backend will be gstreamer.
+            other backend types can be found in `pythoncv.types.CaptureBackends``
+
+    Methods:
+        write: Write a frame to the video.
+
+    Examples:
+        >>> writer = VideoWriter("video.mp4", fps=30, frame_size=(640, 480), is_color=True)
+        >>> for _ in range(30):
+        >>>     writer.write(np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8))
+
+    See Also:
+        https://docs.opencv.org/3.4/dd/d9e/classcv_1_1VideoWriter.html
+    """
+
+    def __init__(
+        self,
+        path: Union[str, os.PathLike],
+        fps: float,
+        frame_size: Tuple[int, int],
+        fourcc: FourCC = "mp4v",
+        is_color: bool = True,
+        backend: CaptureBackends = "auto",
+    ):
+        self._writer = cv2.VideoWriter(
+            path,
+            cv2.VideoWriter_fourcc(*fourcc),
+            fps,
+            frame_size,
+            is_color,
+            CAPTURE_BACKEND_DICT[backend],
+        )
+        assert self._writer.isOpened(), AttributeError(f"failed to open video writer {path}")
+
+        self.path = property(lambda self: path)
+        self.fps = property(lambda self: fps)
+        self.frame_size = property(lambda self: frame_size)
+        self.fourcc = property(lambda self: fourcc)
+        self.is_color = property(lambda self: is_color)
+        self.backend = property(lambda self: backend)
+
+    def write(self, frame: np.ndarray):
+        assert frame.shape[:2] == self.frame_size, ValueError(
+            f"frame size must be {self.frame_size}, not {frame.shape[:2]}"
+        )
+        self._writer.write(frame)
+
+    def __del__(self):
+        self._writer.release()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._writer.release()
