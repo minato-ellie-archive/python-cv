@@ -20,6 +20,11 @@ def test_read_video_form_device():
     assert video.info.fps == 10
     assert video._cap.get(cv2.CAP_PROP_FPS) == 10
 
+    video.fps = 50
+    assert video.info.fps == 50
+    assert video.fps == 50
+    assert video._cap.get(cv2.CAP_PROP_FPS) == 50
+
     video.info.frame_width = 1280
     video.info.frame_height = 720
     assert video.info.frame_width == 1280
@@ -40,3 +45,6 @@ def test_video_exception():
 
     with pytest.raises(RuntimeError):
         video.info.fps = 10
+
+    with pytest.raises(RuntimeError):
+        video.fps = 50

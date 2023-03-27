@@ -182,10 +182,6 @@ class Video(BaseVideo):
     def info(self) -> VideoCaptureProperties:
         return self._info
 
-    @info.setter
-    def info(self, value):
-        self._info = value
-
     def __next__(self) -> np.ndarray:
         ret, frame = self._cap.read()
         if ret:
