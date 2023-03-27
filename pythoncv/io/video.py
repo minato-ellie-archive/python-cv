@@ -7,13 +7,14 @@ import numpy as np
 
 from pythoncv.types import (
     VideoCaptureProperties,
+    VideoWriterProperties,
     CaptureBackends,
     CAPTURE_BACKEND_DICT,
     FourCC,
 )
 
 
-def _generate_info_wrapper(cap: cv2.VideoCapture):
+def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
     """
     Generates a wrapper, which make a fake VideoCaptureProperties object, which can be used to get and set
     properties of the VideoCapture object.
@@ -36,7 +37,10 @@ def _generate_info_wrapper(cap: cv2.VideoCapture):
     def __setattr__(self, key, value):
         if key in properties.__fields__.keys():
             setattr(properties, key, value)
-            cap.set(getattr(cv2, properties.__fields__[key].alias), getattr(properties, key))
+            if cap.set(getattr(cv2, properties.__fields__[key].alias), getattr(properties, key)):
+                return
+            else:
+                raise RuntimeError(f'Failed to set {key} to {value}')
         else:
             raise AttributeError(f'{properties.__class__.__name__} has no attribute {key}')
 
@@ -45,12 +49,13 @@ def _generate_info_wrapper(cap: cv2.VideoCapture):
                    f"fps: {self.fps}, width: {self.frame_width}, height: {self.frame_height}, "
                    f"frame_count: {self.frame_count})")
 
-    return type('VideoCaptureProperties', (object,), {
-        '__doc__': VideoCaptureProperties.__doc__,
-        '__getattribute__': __getattribute__,
-        '__setattr__': __setattr__,
-        '__repr__': __repr__,
-    })()
+    return type(
+        'VideoCaptureProperties', (object,), {
+            '__doc__': VideoCaptureProperties.__doc__,
+            '__getattribute__': __getattribute__,
+            '__setattr__': __setattr__,
+            '__repr__': __repr__,
+        })()
 
 
 class BaseVideo(metaclass=ABCMeta):
@@ -87,22 +92,22 @@ class BaseVideo(metaclass=ABCMeta):
         return NotImplemented
 
     @property
+    @abstractmethod
     def fps(self) -> float:
-        return 1 / self.wait_time
+        ...
 
     @fps.setter
+    @abstractmethod
     def fps(self, value: float):
-        self.wait_time = 1 / value
+        ...
 
     @property
-    @abstractmethod
     def wait_time(self) -> float:
-        ...
+        return 1 / self.fps if self.fps else None
 
     @wait_time.setter
-    @abstractmethod
     def wait_time(self, value: float):
-        ...
+        self.fps = 1 / value if value else None
 
     @property
     @abstractmethod
@@ -139,7 +144,10 @@ class Video(BaseVideo):
         path: Path to the video. If the video is read from a device, the path will be the device number.
         fps: Frames per second. When you set the fps, the wait_time will be changed automatically.
         wait_time: Time to wait between each frame.
-        info: VideoCaptureProperties object, which can be used to get and set properties of the VideoCapture object.
+        info:
+            VideoCaptureProperties object, which can be used to get and set properties of the VideoCapture object.
+            Some properties may not be supported by the backend.
+            This time, no error will be reported, but the value will not be changed.
 
     Methods:
         __next__: Get the next frame.
@@ -157,17 +165,18 @@ class Video(BaseVideo):
         self._cap = cv2.VideoCapture(path, CAPTURE_BACKEND_DICT[backend])
         self.path = path
 
-        fps = self._cap.get(cv2.CAP_PROP_FPS)
-        self._wait_time = 1 / fps if fps > 0 else 0
-        self._info = _generate_info_wrapper(self._cap)
+        self._info = _generate_capture_info_wrapper(self._cap)
 
     @property
-    def wait_time(self) -> float:
-        return self._wait_time
+    def fps(self) -> float:
+        return self._cap.get(cv2.CAP_PROP_FPS)
 
-    @wait_time.setter
-    def wait_time(self, value: float):
-        self._wait_time = value
+    @fps.setter
+    def fps(self, value: float):
+        if self._cap.set(cv2.CAP_PROP_FPS, value):
+            self._wait_time = 1 / value if value > 0 else 0
+        else:
+            raise RuntimeError(f'Failed to set fps to {value}')
 
     @property
     def info(self) -> VideoCaptureProperties:
@@ -185,7 +194,11 @@ class Video(BaseVideo):
             raise StopIteration
 
     def __len__(self) -> Optional[int]:
-        return int(self._cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        length = int(self._cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if length > 0:
+            return length
+        else:
+            raise ValueError("The video is read from a device, which has unlimited length.")
 
     def __del__(self):
         self._cap.release()
@@ -201,6 +214,9 @@ def read_video_from_device(
     Args:
         device: Device number. Most times, your camera is 0.
         backend: Backend to use for capturing video.
+
+    Notes:
+        Some parameters of info(e.g. width, height) can not be set when the video is read by some backends.
 
     Returns:
         A Video object.
@@ -297,6 +313,39 @@ def read_video_from_url(
     return Video(url, backend=backend)
 
 
+def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterProperties:
+    properties = VideoWriterProperties()
+
+    def __getattribute__(self, item):
+        if item in properties.__fields__.keys():
+            setattr(properties, item, writer.get(getattr(cv2, properties.__fields__[item].alias)))
+            return getattr(properties, item)
+        else:
+            raise AttributeError(f'{properties.__class__.__name__} has no attribute {item}')
+
+    def __setattr__(self, key, value):
+        if key in properties.__fields__.keys():
+            setattr(properties, key, value)
+            if writer.set(getattr(cv2, properties.__fields__[key].alias), getattr(properties, key)):
+                return
+            else:
+                raise RuntimeError(f'Failed to set {key} to {value}')
+        else:
+            raise AttributeError(f'{properties.__class__.__name__} has no attribute {key}')
+
+    def __repr__(self: VideoWriterProperties):
+        return str(f"VideoWriterProperties("
+                   f"quality={self.quality}, n_frames={self.n_frames}, frame_bytes={self.frame_bytes})")
+
+    return type(
+        'VideoWriterProperties', (object,), {
+            '__doc__': VideoWriterProperties.__doc__,
+            '__getattribute__': __getattribute__,
+            '__setattr__': __setattr__,
+            '__repr__': __repr__,
+        })()
+
+
 class BaseVideoWriter(metaclass=ABCMeta):
     """
     Base class for video writer.
@@ -391,8 +440,7 @@ class VideoWriter(BaseVideoWriter):
 
     def write(self, frame: np.ndarray):
         assert frame.shape[:2] == self.frame_size, ValueError(
-            f"frame size must be {self.frame_size}, not {frame.shape[:2]}"
-        )
+            f"frame size must be {self.frame_size}, not {frame.shape[:2]}")
         self._writer.write(frame)
 
     def __del__(self):
