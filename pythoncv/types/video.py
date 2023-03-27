@@ -22,8 +22,7 @@ class VideoCaptureProperties(BaseModel):
     gain: confloat(ge=0) = Field(None, alias='CAP_PROP_GAIN')
     exposure: confloat(ge=0) = Field(None, alias='CAP_PROP_EXPOSURE')
     convert_rgb: conint(ge=0) = Field(None, alias='CAP_PROP_CONVERT_RGB')
-    white_balance_blue_u: confloat(ge=0) = Field(
-        None, alias='CAP_PROP_WHITE_BALANCE_BLUE_U')
+    white_balance_blue_u: confloat(ge=0) = Field(None, alias='CAP_PROP_WHITE_BALANCE_BLUE_U')
     rectification: conint(ge=0) = Field(None, alias='CAP_PROP_RECTIFICATION')
     monochrome: conint(ge=0) = Field(None, alias='CAP_PROP_MONOCHROME')
     sharpness: confloat(ge=0) = Field(None, alias='CAP_PROP_SHARPNESS')
@@ -32,8 +31,7 @@ class VideoCaptureProperties(BaseModel):
     temperature: confloat(ge=0) = Field(None, alias='CAP_PROP_TEMPERATURE')
     trigger: confloat(ge=0) = Field(None, alias='CAP_PROP_TRIGGER')
     trigger_delay: confloat(ge=0) = Field(None, alias='CAP_PROP_TRIGGER_DELAY')
-    white_balance_red_v: confloat(ge=0) = Field(
-        None, alias='CAP_PROP_WHITE_BALANCE_RED_V')
+    white_balance_red_v: confloat(ge=0) = Field(None, alias='CAP_PROP_WHITE_BALANCE_RED_V')
     zoom: confloat(ge=0) = Field(None, alias='CAP_PROP_ZOOM')
     focus: confloat(ge=0) = Field(None, alias='CAP_PROP_FOCUS')
     guid: conint(ge=0) = Field(None, alias='CAP_PROP_GUID')
@@ -51,15 +49,11 @@ class VideoCaptureProperties(BaseModel):
     backend: conint(ge=0) = Field(None, alias='CAP_PROP_BACKEND')
     channel: conint(ge=0) = Field(None, alias='CAP_PROP_CHANNEL')
     auto_wb: confloat(ge=0) = Field(None, alias='CAP_PROP_AUTO_WB')
-    wb_temperature: confloat(ge=0) = Field(None,
-                                           alias='CAP_PROP_WB_TEMPERATURE')
-    codec_pixel_format: conint(ge=0) = Field(
-        None, alias='CAP_PROP_CODEC_PIXEL_FORMAT')
+    wb_temperature: confloat(ge=0) = Field(None, alias='CAP_PROP_WB_TEMPERATURE')
+    codec_pixel_format: conint(ge=0) = Field(None, alias='CAP_PROP_CODEC_PIXEL_FORMAT')
     bit_rate: conint(ge=0) = Field(None, alias='CAP_PROP_BITRATE')
-    orientation_meta: conint(ge=0) = Field(None,
-                                           alias='CAP_PROP_ORIENTATION_META')
-    orientation_auto: conint(ge=0) = Field(None,
-                                           alias='CAP_PROP_ORIENTATION_AUTO')
+    orientation_meta: conint(ge=0) = Field(None, alias='CAP_PROP_ORIENTATION_META')
+    orientation_auto: conint(ge=0) = Field(None, alias='CAP_PROP_ORIENTATION_AUTO')
     open_timeout: conint(ge=0) = Field(None, alias='CAP_PROP_OPEN_TIMEOUT_MSEC')
     read_timeout: conint(ge=0) = Field(None, alias='CAP_PROP_READ_TIMEOUT_MSEC')
 
@@ -71,7 +65,8 @@ class VideoCaptureProperties(BaseModel):
         if v == -1:
             return None
         else:
-            assert v >= 0 and isinstance(v, int), 'frame_count must be a positive integer or -1'
+            assert v >= 0 and isinstance(v, int), \
+                'frame_count must be a positive integer or -1'
             return v
 
 
@@ -88,7 +83,8 @@ class VideoWriterProperties(BaseModel):
         if v == -1:
             return None
         else:
-            assert v >= 0 and isinstance(v, int), 'n_frames must be a positive integer or -1'
+            assert v >= 0 and isinstance(v, int), \
+                'n_frames must be a positive integer or -1'
             return v
 
 
