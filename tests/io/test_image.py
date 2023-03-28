@@ -105,3 +105,23 @@ def test_write_image_to_file():
         assert image.shape[2] == 3
         assert os.path.exists(tmpdir + '/sample.jpg')
         assert os.path.getsize(tmpdir + '/sample.jpg') < os.path.getsize('demos/sample.jpg')
+
+
+def test_write_image_to_bytes():
+    image = read_image('demos/sample.jpg')
+    image_bytes = write_image_to_bytes(image)
+    image = read_image_from_bytes(image_bytes)
+    assert image.shape[2] == 3
+
+    ref_image = np.array(Image.open('demos/sample.jpg'))
+    assert np.allclose(image, ref_image, atol=10)
+
+    image_bytes = write_image_to_bytes(image, type='png')
+    image = read_image_from_bytes(image_bytes)
+    assert image.shape[2] == 3
+    assert np.allclose(image, ref_image, atol=20)
+
+    image_bytes = write_image_to_bytes(image, type='jpeg', quality=50)
+    image = read_image_from_bytes(image_bytes)
+    assert image.shape[2] == 3
+    assert len(image_bytes) < os.path.getsize('demos/sample.jpg')
