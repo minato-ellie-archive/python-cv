@@ -13,10 +13,14 @@ def _image_read_flag_wrapper(
     color_mode: ImageReadFlag,
     reduce_ratio: Literal[None, 2, 4, 8] = None,
 ) -> int:
+    assert color_mode in IMAGE_READ_FLAG_DICT, AttributeError(f"Invalid color_mode {color_mode}")
+
     flag = IMAGE_READ_FLAG_DICT[color_mode]
-    if color_mode in ['grayscale', 'color']:
-        if reduce_ratio is not None:
+    if reduce_ratio is not None:
+        if color_mode in ['grayscale', 'color']:
             flag = IMAGE_READ_FLAG_DICT[(color_mode, reduce_ratio)]
+        else:
+            raise AttributeError(f"Cannot reduce image with color_mode {color_mode}")
     return flag
 
 
@@ -84,7 +88,7 @@ def read_image_from_bytes(
     """
     flag = _image_read_flag_wrapper(color_mode, reduce_ratio)
     result = cv2.imdecode(np.frombuffer(b, np.uint8), flag)
-    assert result is not None, AttributeError(f"Failed to read image from bytes")
+    assert result is not None, AttributeError("Failed to read image from bytes")
     return result[..., ::-1]
 
 
@@ -115,6 +119,7 @@ def read_image(
 
     See Also:
         https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56
+
         https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html#ga26a67788faa58ade337f8d28ba0eb19e
     """
     if isinstance(image, bytes):
@@ -126,15 +131,17 @@ def read_image(
 def _image_write_flag_wrapper(
     type: Optional[ImageWriteFlag] = None,
     quality: Union[None, int, float] = None,
-) -> Union[None, int, Tuple[int, int]]:
+) -> Union[None, Tuple[int, Optional[int]]]:
     if type is None:
         return None
+    else:
+        assert type in IMAGE_WRITE_FLAG_DICT, AttributeError(f"Invalid image type {type}")
 
     flag = IMAGE_WRITE_FLAG_DICT[type]
     if type in ['webp', 'jpeg']:
         if quality is not None:
             return flag, quality
-    return flag
+    return flag, None
 
 
 def write_image_to_file(
@@ -199,5 +206,5 @@ def write_image_to_bytes(
     """
     flag = _image_write_flag_wrapper(type, quality)
     ret, result = cv2.imencode('.jpg', image[..., ::-1], flag)
-    assert ret, AttributeError(f"Failed to write image to bytes")
+    assert ret, AttributeError("Failed to write image to bytes")
     return result.tobytes()
