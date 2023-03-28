@@ -65,9 +65,9 @@ class VideoCaptureProperties(BaseModel):
         if v == -1:
             return None
         else:
-            assert v >= 0 and isinstance(v, int), \
+            assert v >= 0 and v % 1 == 0.0, \
                 'frame_count must be a positive integer or -1'
-            return v
+            return int(v)
 
 
 class VideoWriterProperties(BaseModel):
@@ -83,7 +83,7 @@ class VideoWriterProperties(BaseModel):
         if v == -1:
             return None
         else:
-            assert v >= 0 and isinstance(v, int), \
+            assert v >= 0 and v % 1 == 0.0, \
                 'n_frames must be a positive integer or -1'
             return v
 

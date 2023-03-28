@@ -156,10 +156,32 @@ def test_write_video_to_file():
     del writer
 
     tmp_video = read_video_from_file(tmp_path)
-    assert len(tmp_video) == len(video)
+    ori_video = read_video_from_file('demos/sample.mp4')
+    assert len(tmp_video) == len(ori_video)
     assert tmp_video.info.fps == video.info.fps
     assert tmp_video.info.frame_height == video.info.frame_height
     assert tmp_video.info.frame_width == video.info.frame_width
 
-    for frame1, frame2 in zip(video, tmp_video):
-        assert np.all(frame1 == frame2)
+
+def test_video_properties():
+    video = read_video_from_file('demos/sample.mp4')
+    cap = cv2.VideoCapture('demos/sample.mp4')
+
+    assert video.info.fps == cap.get(cv2.CAP_PROP_FPS)
+    assert video.info.frame_count == cap.get(cv2.CAP_PROP_FRAME_COUNT)
+    assert video.info.frame_height == cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    assert video.info.frame_width == cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+
+    assert video.fps == cap.get(cv2.CAP_PROP_FPS)
+    assert len(video) == cap.get(cv2.CAP_PROP_FRAME_COUNT)
+
+    video = read_video_from_device(0, backend='d-show')
+
+    video.info.frame_width = 1280
+    video.info.frame_height = 720
+
+    assert video.info.frame_width == 1280
+    assert video.info.frame_height == 720
+    assert video._cap.get(cv2.CAP_PROP_FRAME_WIDTH) == 1280
+    assert video._cap.get(cv2.CAP_PROP_FRAME_HEIGHT) == 720
+

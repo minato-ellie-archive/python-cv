@@ -1,6 +1,4 @@
 """ PythonCV IO module.
-
-
 """
 
 from .video import (

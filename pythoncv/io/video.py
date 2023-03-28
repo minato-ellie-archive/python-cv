@@ -444,7 +444,7 @@ class VideoWriter(BaseVideoWriter):
     def write(self, frame: np.ndarray):
         assert frame.shape[:2] == self.frame_size, ValueError(
             f"frame size must be {self.frame_size}, not {frame.shape[:2]}")
-        self._writer.write(frame)
+        self._writer.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
 
     def __del__(self):
         self._writer.release()
