@@ -15,7 +15,8 @@ from pythoncv.types import (
 
 
 def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
-    """
+    """Captures the properties of the VideoCapture object.
+
     Generates a wrapper, which make a fake VideoCaptureProperties object, which can be used to get and set
     properties of the VideoCapture object.
 
@@ -59,8 +60,7 @@ def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
 
 
 class BaseVideo(metaclass=ABCMeta):
-    """
-    Base class for video.
+    """Base class for video.
 
     A video in pythoncv is a generator, which yields a frame(a numpy.ndarray object) each time.
 
@@ -121,8 +121,7 @@ class BaseVideo(metaclass=ABCMeta):
 
 
 class Video(BaseVideo):
-    """
-    Pythonic API for video.
+    """Pythonic API for video.
 
     Notes:
         Image in pythoncv is a numpy.ndarray object, which has the shape of (height, width, channel).
@@ -204,8 +203,7 @@ def read_video_from_device(
     device: int,
     backend: CaptureBackends = "auto",
 ) -> Video:
-    """
-    Read video from a device.
+    """Read video from a device.
 
     Args:
         device: Device number. Most times, your camera is 0.
@@ -244,8 +242,7 @@ def read_video_from_file(
     path: Union[str, os.PathLike],
     backend: CaptureBackends = "auto",
 ) -> Video:
-    """
-    Read video from a file.
+    """Read video from a file.
 
     Args:
         path: Path to the video file.
@@ -273,7 +270,7 @@ def read_video_from_file(
             raise TypeError(f"path must be a string, not {type(path)}") from e
 
     if not os.path.isfile(path):
-        raise FileNotFoundError(f"file {path} not found")
+        raise FileNotFoundError(f"file not found: {os.path.abspath(path)}")
 
     return Video(path, backend=backend)
 
@@ -282,8 +279,7 @@ def read_video_from_url(
     url: str,
     backend: CaptureBackends = "auto",
 ) -> Video:
-    """
-    Read video from a url.
+    """Read video from a url.
 
     Args:
         url: Url to the video.
@@ -343,8 +339,7 @@ def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterPropert
 
 
 class BaseVideoWriter(metaclass=ABCMeta):
-    """
-    Base class for video writer.
+    """Base class for video writer.
 
     Notes:
         Image in pythoncv shoule be a numpy.ndarray object, which has the shape of (height, width, channel).
@@ -363,8 +358,7 @@ class BaseVideoWriter(metaclass=ABCMeta):
 
     @abstractmethod
     def write(self, frame: np.ndarray):
-        """
-        Write a frame to the video.
+        """Write a frame to the video.
 
         Args:
             frame: Frame to write.
@@ -377,8 +371,7 @@ class BaseVideoWriter(metaclass=ABCMeta):
 
 
 class VideoWriter(BaseVideoWriter):
-    """
-    Pythonic API for video writer.
+    """Pythonic API for video writer.
 
     Notes:
         OpenCV VideoWriter will be released automatically when the VideoWriter object is deleted,
@@ -419,26 +412,26 @@ class VideoWriter(BaseVideoWriter):
         )
         assert self._writer.isOpened(), AttributeError(f"failed to open video writer {path}")
 
-        self._path = path
+        self._path = str(path)
         self._fps = fps
         self._frame_size = frame_size
         self._fourcc = fourcc
         self._is_color = is_color
 
     @property
-    def path(self):
+    def path(self) -> str:
         return self._path
 
     @property
-    def fps(self):
+    def fps(self) -> float:
         return self._fps
 
     @property
-    def frame_size(self):
+    def frame_size(self) -> Tuple[int, int]:
         return self._frame_size
 
     @property
-    def fourcc(self):
+    def fourcc(self) -> FourCC:
         return self._fourcc
 
     def write(self, frame: np.ndarray):
