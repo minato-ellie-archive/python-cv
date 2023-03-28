@@ -13,10 +13,14 @@ def _image_read_flag_wrapper(
     color_mode: ImageReadFlag,
     reduce_ratio: Literal[None, 2, 4, 8] = None,
 ) -> int:
+    assert color_mode in IMAGE_READ_FLAG_DICT, AttributeError(f"Invalid color_mode {color_mode}")
+
     flag = IMAGE_READ_FLAG_DICT[color_mode]
-    if color_mode in ['grayscale', 'color']:
-        if reduce_ratio is not None:
+    if reduce_ratio is not None:
+        if color_mode in ['grayscale', 'color']:
             flag = IMAGE_READ_FLAG_DICT[(color_mode, reduce_ratio)]
+        else:
+            raise AttributeError(f"Cannot reduce image with color_mode {color_mode}")
     return flag
 
 
@@ -129,6 +133,8 @@ def _image_write_flag_wrapper(
 ) -> Union[None, int, Tuple[int, int]]:
     if type is None:
         return None
+    else:
+        assert type in IMAGE_WRITE_FLAG_DICT, AttributeError(f"Invalid image type {type}")
 
     flag = IMAGE_WRITE_FLAG_DICT[type]
     if type in ['webp', 'jpeg']:
