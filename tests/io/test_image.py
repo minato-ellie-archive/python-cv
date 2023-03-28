@@ -79,3 +79,29 @@ def test_read_image():
     with pytest.raises(AttributeError):
         with open('demos/sample.jpg', 'rb') as f:
             image = read_image(f.read(), color_mode='unchanged', reduce_ratio=8)
+
+
+def test_write_image_to_file():
+    import tempfile
+
+    image = read_image('demos/sample.jpg')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        write_image_to_file(image, tmpdir + '/sample.jpg')
+        image = read_image(tmpdir + '/sample.jpg')
+        assert image.shape[2] == 3
+
+        ref_image = np.array(Image.open('demos/sample.jpg'))
+        assert np.allclose(image, ref_image, atol=10)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        write_image_to_file(image, tmpdir + '/sample.png', type='png')
+        image = read_image(tmpdir + '/sample.png')
+        assert image.shape[2] == 3
+        assert np.allclose(image, ref_image, atol=10)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        write_image_to_file(image, tmpdir + '/sample.jpg', type='jpeg', quality=50)
+        image = read_image(tmpdir + '/sample.jpg')
+        assert image.shape[2] == 3
+        assert os.path.exists(tmpdir + '/sample.jpg')
+        assert os.path.getsize(tmpdir + '/sample.jpg') < os.path.getsize('demos/sample.jpg')
