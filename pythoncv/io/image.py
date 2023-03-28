@@ -130,7 +130,7 @@ def read_image(
 def _image_write_flag_wrapper(
     type: Optional[ImageWriteFlag] = None,
     quality: Union[None, int, float] = None,
-) -> Union[None, int, Tuple[int, int]]:
+) -> Union[None, Tuple[int, Optional[int]]]:
     if type is None:
         return None
     else:
@@ -140,7 +140,7 @@ def _image_write_flag_wrapper(
     if type in ['webp', 'jpeg']:
         if quality is not None:
             return flag, quality
-    return flag
+    return flag, None
 
 
 def write_image_to_file(
