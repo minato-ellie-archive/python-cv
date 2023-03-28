@@ -228,7 +228,10 @@ def read_video_from_device(
         ...
     """
     if isinstance(device, str):
-        device = int(device)
+        try:
+            device = int(device)
+        except ValueError:
+            raise TypeError(f"device must be an int or str, not {type(device)}")
     elif not isinstance(device, int):
         raise TypeError(f"device must be an int or str, not {type(device)}")
 
@@ -418,6 +421,8 @@ class VideoWriter(BaseVideoWriter):
         self._fourcc = fourcc
         self._is_color = is_color
 
+        self._info = _generate_writer_info_wrapper(self._writer)
+
     @property
     def path(self) -> str:
         return self._path
@@ -433,6 +438,10 @@ class VideoWriter(BaseVideoWriter):
     @property
     def fourcc(self) -> FourCC:
         return self._fourcc
+
+    @property
+    def info(self) -> VideoWriterProperties:
+        return self._info
 
     def write(self, frame: np.ndarray):
         assert frame.shape[:2] == self.frame_size, ValueError(

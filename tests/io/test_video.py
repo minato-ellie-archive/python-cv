@@ -5,6 +5,7 @@ from pythoncv.io.video import *
 def test_read_video_form_device():
     """Test read video from device."""
     video = read_video_from_device(0, backend='d-show')
+    assert video.info.frame_count is None
     assert isinstance(video, Video)
     with pytest.raises(ValueError):
         len(video)
@@ -185,3 +186,38 @@ def test_video_properties():
     assert video._cap.get(cv2.CAP_PROP_FRAME_WIDTH) == 1280
     assert video._cap.get(cv2.CAP_PROP_FRAME_HEIGHT) == 720
 
+
+def test_illegal_video_info_properties():
+    video = read_video_from_file('demos/sample.mp4')
+
+    assert video.info.fps != 0
+    assert video.fps == video.info.fps == video._cap.get(cv2.CAP_PROP_FPS)
+    assert video.fps == 1/video.wait_time
+
+    with pytest.raises(RuntimeError):
+        video.info.frame_width = 1280
+
+    with pytest.raises(AttributeError):
+        video.info.xyz = 1280
+
+    with pytest.raises(AttributeError):
+        print(video.info.xyz)
+
+
+def test_video_writer_info():
+    import tempfile
+    tmp_path = tempfile.mktemp(suffix='.mp4')
+    video = read_video_from_file('demos/sample.mp4')
+    writer = VideoWriter(tmp_path, video.fps, (video.info.frame_height, video.info.frame_width), "mp4v")
+    assert writer.info.n_frames is not None
+
+
+def test_illegal_video_function_params(monkeypatch):
+    with pytest.raises(FileNotFoundError):
+        read_video_from_file(1)
+
+    with pytest.raises(FileNotFoundError):
+        read_video_from_file(object())
+
+    with pytest.raises(TypeError):
+        read_video_from_device('asd')
