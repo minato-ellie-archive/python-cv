@@ -88,7 +88,7 @@ def read_image_from_bytes(
     """
     flag = _image_read_flag_wrapper(color_mode, reduce_ratio)
     result = cv2.imdecode(np.frombuffer(b, np.uint8), flag)
-    assert result is not None, AttributeError(f"Failed to read image from bytes")
+    assert result is not None, AttributeError("Failed to read image from bytes")
     return result[..., ::-1]
 
 
@@ -119,6 +119,7 @@ def read_image(
 
     See Also:
         https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56
+
         https://docs.opencv.org/4.x/d4/da8/group__imgcodecs.html#ga26a67788faa58ade337f8d28ba0eb19e
     """
     if isinstance(image, bytes):
@@ -205,5 +206,5 @@ def write_image_to_bytes(
     """
     flag = _image_write_flag_wrapper(type, quality)
     ret, result = cv2.imencode('.jpg', image[..., ::-1], flag)
-    assert ret, AttributeError(f"Failed to write image to bytes")
+    assert ret, AttributeError("Failed to write image to bytes")
     return result.tobytes()

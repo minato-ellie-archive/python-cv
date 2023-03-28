@@ -27,13 +27,11 @@ __all__ = [
     'read_video_from_device',
     'read_video_from_file',
     'read_video_from_url',
-
     'read_image_from_file',
     'read_image_from_bytes',
     'read_image',
     'write_image_to_file',
     'write_image_to_bytes',
-
     'video',
     'image',
 ]
