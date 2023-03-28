@@ -194,7 +194,7 @@ class Video(BaseVideo):
         if length > 0:
             return length
         else:
-            raise ValueError("The video is read from a device, which has unlimited length.")
+            raise ValueError("The video has unlimited length or the length is undefined.")
 
     def __del__(self):
         self._cap.release()
@@ -387,14 +387,8 @@ class VideoWriter(BaseVideoWriter):
     Args:
         path: Path to the video file.
         fps: Frames per second.
-        frame_size: Size of the video frame.
+        frame_size: Size of the video frame. The shape of the frame should be (height, width).
         is_color: Whether the video is color or not.
-        backend: Backend to use for writing video.
-            If backend is "auto", the backend will be chosen automatically.
-            If backend is "opencv", the backend will be OpenCV.
-            If backend is "ffmpeg", the backend will be ffmpeg.
-            If backend is "gstreamer", the backend will be gstreamer.
-            other backend types can be found in `pythoncv.types.CaptureBackends``
 
     Methods:
         write: Write a frame to the video.
@@ -415,24 +409,37 @@ class VideoWriter(BaseVideoWriter):
         frame_size: Tuple[int, int],
         fourcc: FourCC = "mp4v",
         is_color: bool = True,
-        backend: CaptureBackends = "auto",
     ):
         self._writer = cv2.VideoWriter(
             path,
             cv2.VideoWriter_fourcc(*fourcc),
             fps,
-            frame_size,
+            frame_size[::-1],
             is_color,
-            CAPTURE_BACKEND_DICT[backend],
         )
         assert self._writer.isOpened(), AttributeError(f"failed to open video writer {path}")
 
-        self.path = property(lambda self: path)
-        self.fps = property(lambda self: fps)
-        self.frame_size = property(lambda self: frame_size)
-        self.fourcc = property(lambda self: fourcc)
-        self.is_color = property(lambda self: is_color)
-        self.backend = property(lambda self: backend)
+        self._path = path
+        self._fps = fps
+        self._frame_size = frame_size
+        self._fourcc = fourcc
+        self._is_color = is_color
+
+    @property
+    def path(self):
+        return self._path
+
+    @property
+    def fps(self):
+        return self._fps
+
+    @property
+    def frame_size(self):
+        return self._frame_size
+
+    @property
+    def fourcc(self):
+        return self._fourcc
 
     def write(self, frame: np.ndarray):
         assert frame.shape[:2] == self.frame_size, ValueError(
