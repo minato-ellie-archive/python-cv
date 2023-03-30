@@ -18,7 +18,6 @@ def unit_tests(session):
 def coverage(session):
     session.install('coverage', 'codecov')
     session.run('coverage', 'xml')
-    session.run('codecov')
 
 
 @nox.session
