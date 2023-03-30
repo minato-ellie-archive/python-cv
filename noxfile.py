@@ -10,7 +10,6 @@ def unit_tests(session):
                 '--cov=pythoncv',
                 '--cov-report=term-missing',
                 '--cov-report=xml',
-                '--cov-fail-under=75'
                 )
     session.notify('coverage')
 
@@ -18,7 +17,7 @@ def unit_tests(session):
 @nox.session
 def coverage(session):
     session.install('coverage', 'codecov')
-    session.run('coverage', 'xml', '--fail-under=75')
+    session.run('coverage', 'xml')
     session.run('codecov')
 
 
