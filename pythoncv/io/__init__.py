@@ -1,10 +1,13 @@
 """ PythonCV IO module.
 """
 
-from .video import (
+from .base import (
     BaseVideo,
-    Video,
     BaseVideoWriter,
+)
+
+from .video import (
+    Video,
     VideoWriter,
     read_video_from_device,
     read_video_from_file,
