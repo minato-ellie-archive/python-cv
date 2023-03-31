@@ -1,25 +1,54 @@
 import pytest
+import pytest_mock as pm
+import cv2
 from pythoncv.io.display import *
 from tests.utils import *
 
 
-@pytest.mark.skipif(check_in_ci(), reason='Skip in CI. Display is not available.')
-def test_display_video():
+def patch_cv2(mocker: pm.MockerFixture):
+    mocker.patch.object(cv2, 'namedWindow')
+    mocker.patch.object(cv2, 'resizeWindow')
+    mocker.patch.object(cv2, 'destroyWindow')
+    mocker.patch.object(cv2, 'getWindowImageRect')
+    mocker.patch.object(cv2, 'getWindowProperty')
+    mocker.patch.object(cv2, 'setWindowProperty')
+    mocker.patch.object(cv2, 'resizeWindow')
+
+
+def test_display_video(mocker):
     """Test display video."""
+    patch_cv2(mocker)
+
     window = VideoWindow(name='test', size=(640, 480), type='normal')
+    cv2.namedWindow.call_count == 0
+    cv2.resizeWindow.call_count == 0
     window.open()
-    assert window.size == (640, 480)
-    assert window.aspect_ratio == 1.3333333333333333
+
+    cv2.namedWindow.assert_called_once_with('test', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow.assert_called_once_with('test', 640, 480)
+
+    _ = window.aspect_ratio
+    cv2.getWindowProperty.assert_called_once_with('test', cv2.WND_PROP_ASPECT_RATIO)
     for _ in range(10):
         window.write(np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8))
 
     window.close()
+    cv2.destroyWindow.assert_called_once_with('test')
 
+
+def test_display_video_with_context_manager(mocker):
+    """Test display video with context manager."""
+    patch_cv2(mocker)
     with VideoWindow(name='test', size=(640, 480), type='normal') as window:
-        assert window.size == (640, 480)
-        assert window.aspect_ratio == 1.3333333333333333
+        _ = window.size
+        cv2.getWindowImageRect.assert_called_once_with('test')
+        _ = window.aspect_ratio
+        cv2.getWindowProperty.assert_called_once_with('test', cv2.WND_PROP_ASPECT_RATIO)
         for _ in range(10):
             window.write(np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8))
+        cv2.destroyWindow.assert_not_called()
+
+    cv2.destroyWindow.assert_called_once_with('test')
 
     with pytest.raises(RuntimeError):
         del window

@@ -1,9 +1,15 @@
 import nox
+import os
+
+
+def is_in_ci():
+    return os.getenv('CI') == 'true'
 
 
 def install_dependencies(session, group):
     session.install('poetry')
-    session.run('poetry', 'config', 'virtualenvs.create', 'false')
+    if is_in_ci():
+        session.run('poetry', 'config', 'virtualenvs.create', 'false')
     session.run('poetry', 'install', '--with', group)
 
 
@@ -11,7 +17,7 @@ def install_dependencies(session, group):
 def unit_tests(session):
     install_dependencies(session, 'test')
     # Generate coverage report for Codecov
-    session.run('pytest',
+    session.run('poetry', 'run', 'pytest',
                 '--cov=pythoncv',
                 '--cov-report=term-missing',
                 '--cov-report=xml',
