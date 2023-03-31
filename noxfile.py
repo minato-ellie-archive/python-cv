@@ -3,11 +3,8 @@ import nox
 
 def install_dependencies(session, group):
     session.install('poetry')
-    session.run('poetry', 'export',
-                '--format=requirements.txt',
-                '--output=requirements.txt',
-                f'--with={group}')
-    session.install('-r', 'requirements.txt')
+    session.run('poetry', 'config', 'virtualenvs.create', 'false')
+    session.run('poetry', 'install', '--with', group)
 
 
 @nox.session
