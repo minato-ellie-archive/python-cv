@@ -3,15 +3,15 @@ import nox
 
 def install_dependencies(session, group):
     session.install('poetry')
-    session.run('poetry', 'config', 'virtualenvs.create', 'false')
-    session.run('poetry', 'install', '--with', group)
+    # session.run('poetry', 'config', 'virtualenvs.create', 'false')
+    session.run('poetry', 'install', '--only', group)
 
 
 @nox.session
 def unit_tests(session):
     install_dependencies(session, 'test')
     # Generate coverage report for Codecov
-    session.run('pytest',
+    session.run('poetry', 'run', 'pytest',
                 '--cov=pythoncv',
                 '--cov-report=term-missing',
                 '--cov-report=xml',
