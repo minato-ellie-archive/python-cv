@@ -1,6 +1,18 @@
 name: Pylint
 
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+  push:
+    branches:
+      - main
+      - develop
+
 
 jobs:
   build:

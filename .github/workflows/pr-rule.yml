@@ -1,0 +1,20 @@
+name: Pull Request Rule
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feature/*
+      - hotfix/*
+      - release/*
+
+jobs:
+  reject:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject PR to "main"
+        if: github.base_ref == 'main' && ( github.head_ref != 'develop' && github.head_ref != 'actions' )
+        run: |
+          echo "Pull requests to main must be from develop"
+          exit 1
