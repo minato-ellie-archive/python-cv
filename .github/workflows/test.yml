@@ -28,6 +28,9 @@ jobs:
         run: |
           poetry config virtualenvs.create false
           poetry install
+      - name: list installed packages
+        run: |
+          pip list
       - name: Run unit tests
         run: pytest --cov pythoncv
       - name: Upload coverage reports to Codecov
