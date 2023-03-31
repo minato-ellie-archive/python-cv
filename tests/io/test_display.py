@@ -1,7 +1,9 @@
 import pytest
 from pythoncv.io.display import *
+from tests.utils import *
 
 
+@pytest.mark.skipif(check_in_ci(), reason='Skip in CI. Display is not available.')
 def test_display_video():
     """Test display video."""
     window = VideoWindow(name='test', size=(640, 480), type='normal')
@@ -25,6 +27,7 @@ def test_display_video():
         window.write(np.random.randint(0, 255, (480, 640, 3), dtype=np.uint8))
 
 
+@pytest.mark.skipif(check_in_ci(), reason="Skip in CI. Can not open window with certainty monitor size.")
 def test_display_attribute():
     """Test display attribute."""
     window = VideoWindow(name='test', size=(640, 480), type='normal')
@@ -87,6 +90,7 @@ def test_display_attribute():
     assert window.fullscreen is False
 
 
+@pytest.mark.skipif(check_in_ci(), reason="Skip in CI. Need a display to run this test.")
 def test_display_repr():
     """Test display repr."""
     window = VideoWindow(name='test', size=(640, 480), type='normal')
