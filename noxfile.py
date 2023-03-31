@@ -10,7 +10,7 @@ def install_dependencies(session, group):
     session.install('poetry')
     if is_in_ci():
         session.run('poetry', 'config', 'virtualenvs.create', 'false')
-    session.run('poetry', 'install', '--only', group)
+    session.run('poetry', 'install', '--with', group)
 
 
 @nox.session
