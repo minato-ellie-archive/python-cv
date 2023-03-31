@@ -26,6 +26,14 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install headless display dependencies
+        run: sudo apt update && sudo apt install libgl1-mesa-glx xvfb x11-xserver-utils -y
+      - name: Start headless display
+        run: |
+          export DISPLAY=:99.0
+          echo "DISPLAY=:99.0" >> $GITHUB_ENV
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+          sleep 3
       - name: Install nox
         run: |
           python -m pip install --upgrade pip
