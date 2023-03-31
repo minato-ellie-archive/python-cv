@@ -1,7 +1,9 @@
 import pytest
 from pythoncv.io.video import *
+from tests.utils import *
 
 
+@pytest.mark.skipif(check_in_ci(), reason='Skip in CI. Need a camera.')
 def test_read_video_form_device():
     """Test read video from device."""
     video = read_video_from_device(0, backend='d-show')
@@ -34,6 +36,7 @@ def test_read_video_form_device():
     assert video._cap.get(cv2.CAP_PROP_FRAME_HEIGHT) == 720
 
 
+@pytest.mark.skipif(check_in_ci(), reason='Skip in CI. Need a camera.')
 def test_video_exception():
     video = read_video_from_device(0)
 
@@ -176,6 +179,9 @@ def test_video_properties():
     assert video.fps == cap.get(cv2.CAP_PROP_FPS)
     assert len(video) == cap.get(cv2.CAP_PROP_FRAME_COUNT)
 
+
+@pytest.mark.skipif(not cv2.VideoCapture(0).isOpened(), reason="No camera device found.")
+def test_device_properties():
     video = read_video_from_device(0, backend='d-show')
 
     video.info.frame_width = 1280

@@ -1,19 +1,27 @@
 import nox
 
 
-@nox.session
-def tests(session):
+def install_dependencies(session, group):
     session.install('poetry')
-    session.run('poetry', 'install')
-    session.run('poetry', 'run', 'pytest', '--cov=pythoncv', '--cov-report=term-missing', '--cov-report=html')
-    session.notify('coverage')
+    session.run('poetry', 'config', 'virtualenvs.create', 'false')
+    session.run('poetry', 'install', '--with', group)
+
+
+@nox.session
+def unit_tests(session):
+    install_dependencies(session, 'test')
+    # Generate coverage report for Codecov
+    session.run('pytest',
+                '--cov=pythoncv',
+                '--cov-report=term-missing',
+                '--cov-report=xml',
+                )
 
 
 @nox.session
 def coverage(session):
-    session.install('coverage')
-    session.run('coverage', 'report', '--show-missing', '--fail-under=75')
-    session.run('coverage', 'erase')
+    session.install('coverage', 'codecov')
+    session.run('coverage', 'xml')
 
 
 @nox.session
