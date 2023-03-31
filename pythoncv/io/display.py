@@ -10,6 +10,7 @@ from pythoncv.types.display import WINDOW_FLAGS_DICT, WindowFlags
 
 
 class VideoWindow(BaseVideoWriter):
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -42,6 +43,8 @@ class VideoWindow(BaseVideoWriter):
         if not self._is_open:
             raise RuntimeError("VideoWindow is not open")
         return cv2.getWindowImageRect(self.name)[2:]
+
+    # TODO: Add Position property
 
     @size.setter
     def size(self, value: Tuple[int, int]):

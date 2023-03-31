@@ -1,7 +1,6 @@
 from typing import Literal
 
 import cv2
-from pydantic import BaseModel, Field, conint, confloat, validator, root_validator
 
 WINDOW_FLAGS_DICT = {
     'normal': cv2.WINDOW_NORMAL,
@@ -16,13 +15,5 @@ WINDOW_FLAGS_DICT = {
 
 WINDOW_FLAGS_INVERSE_DICT = {v: k for k, v in WINDOW_FLAGS_DICT.items()}
 
-WindowFlags = Literal[
-    'normal',
-    'autosize',
-    'opengl',
-    'fullscreen',
-    'freeratio',
-    'keepratio',
-    'gui_expanded',
-    'gui_normal',
-]
+WindowFlags = Literal['normal', 'autosize', 'opengl', 'fullscreen', 'freeratio', 'keepratio', 'gui_expanded',
+                      'gui_normal',]
