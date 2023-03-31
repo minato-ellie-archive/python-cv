@@ -16,7 +16,6 @@ def unit_tests(session):
                 '--cov-report=term-missing',
                 '--cov-report=xml',
                 )
-    session.notify('coverage')
 
 
 @nox.session
