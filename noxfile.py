@@ -36,10 +36,16 @@ def coverage(session):
 
 @nox.session
 def lint(session):
-    session.install('toml', 'yapf', 'flake8', 'isort', 'pyproject-flake8')
+    session.install('toml', 'yapf', 'flake8', 'pyproject-flake8')
     session.run('yapf', '--in-place', '--recursive', './pythoncv')
     session.run('flake8', 'pythoncv')
-    session.run('isort', '--recursive', 'pythoncv')
+    session.notify('mypy')
+
+
+@nox.session
+def mypy(session):
+    install_dependencies(session, 'test')
+    session.run('poetry', 'run', 'mypy', 'pythoncv')
 
 
 @nox.session
