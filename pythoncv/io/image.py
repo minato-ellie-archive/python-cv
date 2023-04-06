@@ -130,7 +130,7 @@ def read_image(
 def _image_write_flag_wrapper(
     type: Optional[ImageWriteFlag] = None,
     quality: Union[None, int, float] = None,
-) -> Union[None, tuple[int, Union[int, float]], tuple[int, None]]:
+) -> Union[None, Tuple[int, Union[int, float]], Tuple[int, None]]:
     if type is None:
         return None
     else:
