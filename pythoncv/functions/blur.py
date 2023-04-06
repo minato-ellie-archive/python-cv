@@ -10,7 +10,7 @@ Notes:
 
 """
 import warnings
-from typing import Tuple
+from typing import Tuple, Union
 
 import cv2  # type: ignore
 import numpy as np
@@ -227,13 +227,16 @@ def bilateral_filter(
         [Bilateral Filtering for Gray and Color Images](https://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/MANDUCHI1/Bilateral_Filtering.html)
 
     """  # noqa: E501
+    if inplace:
+        raise NotImplementedError("inplace is not supported for bilateral_filter")
+
     dst = _copy_if_not_inplace(x, inplace)
     return cv2.bilateralFilter(x, d, sigma_color, sigma_space, dst, BORDER_TYPES_DICT[border_type])
 
 
 def stack_blur(
         x: np.ndarray,
-        ksize: Tuple[int, int] = (3, 3),
+        ksize: Union[Tuple[int, int], int] = (3, 3),
         *,
         inplace: bool = False,
 ) -> np.ndarray:
@@ -266,13 +269,15 @@ def stack_blur(
         [OpenCV Doc](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#ga13a01048a8a200aab032ce86a9e7c7be)
 
     """
+    if isinstance(ksize, int):
+        ksize = (ksize, ksize)
     dst = _copy_if_not_inplace(x, inplace)
     return cv2.stackBlur(x, ksize, dst)
 
 
 def square_blur(
     x: np.ndarray,
-    ksize: Tuple[int, int] = (3, 3),
+    ksize: Union[Tuple[int, int], int] = (3, 3),
     anchor: Tuple[int, int] = (-1, -1),
     normalize: bool = True,
     border_type: BorderTypes = "reflect101",
@@ -298,6 +303,11 @@ def square_blur(
     See Also:
         [OpenCV Doc](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#ga76e863e7869912edbe88321253b72688)
     """
+    if inplace:
+        raise NotImplementedError("inplace is not supported for square_blur")
+
     warnings.warn("This function is not currently supported by OpenCV.", RuntimeWarning)
+    if isinstance(ksize, int):
+        ksize = (ksize, ksize)
     dst = _copy_if_not_inplace(x, inplace)
     return cv2.sqrBoxFilter(x, -1, ksize, dst, anchor, normalize, BORDER_TYPES_DICT[border_type])
