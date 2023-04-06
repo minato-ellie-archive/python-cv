@@ -18,12 +18,6 @@ repos:
         types: [python]
         args: [--in-place, --recursive, --parallel]
 
-#    -   id: isort
-#        name: isort
-#        entry: poetry run isort
-#        language: system
-#        types: [python]
-
     -   id: flake8
         name: Check with Flake8
         entry: poetry run flake8
