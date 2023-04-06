@@ -1,7 +1,1 @@
-from .video import (
-    VideoCaptureProperties,
-    VideoWriterProperties,
-    CaptureBackends,
-    CAPTURE_BACKEND_DICT,
-    FourCC,
-)
+from .video import (CAPTURE_BACKEND_DICT, CaptureBackends, FourCC, VideoCaptureProperties, VideoWriterProperties)

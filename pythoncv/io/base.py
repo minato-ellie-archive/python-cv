@@ -60,11 +60,6 @@ class BaseVideo(metaclass=ABCMeta):
     def info(self) -> VideoCaptureProperties:
         ...
 
-    @info.setter
-    @abstractmethod
-    def info(self, value):
-        ...
-
 
 class BaseVideoWriter(metaclass=ABCMeta):
     """Base class for writer.
