@@ -216,7 +216,11 @@ def bilateral_filter(
         When d>0, it specifies the neighborhood size regardless of sigmaSpace.
         Otherwise, d is proportional to sigmaSpace
         border_type: border mode used to extrapolate pixels outside the image.
-        inplace: if True, the input image will be modified inplace.
+        inplace: if True, the input image will be modified inplace. (not supported)
+
+    Warnings:
+        inplace is not supported (**OpenCV does not support inplace operation for bilateralFilter**).
+        [see more](https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html#ga9d7064d478c95d60003cf839430737ed:~:text=This%20filter%20does%20not%20work%20inplace.)
 
     Returns:
         Result of the blurring operation.
@@ -295,7 +299,10 @@ def square_blur(
         anchor: anchor point; default value (-1, -1) means that the anchor is at the kernel center.
         normalize: specifying whether the kernel is to be normalized by its area or not.
         border_type: border mode used to extrapolate pixels outside the image.
-        inplace: if True, the input image will be modified inplace.
+        inplace: if True, the input image will be modified inplace. (not supported)
+
+    Warnings:
+        inplace is not supported (No information about inplace operation in OpenCV Doc, but it is not working).
 
     Returns:
         Result of the blurring operation.
