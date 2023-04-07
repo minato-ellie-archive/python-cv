@@ -1,12 +1,15 @@
 from abc import ABCMeta, abstractmethod
+from typing import Callable, TypeVar
 
 import numpy as np
 
 from pythoncv.core.types import VideoCaptureProperties
 
+TFunctionOutput = TypeVar('TFunctionOutput')
+
 
 class CVImage(np.ndarray):
-    """ A Monad for numpy.ndarray.
+    """ Image in pythoncv.
 
     Notes:
         Image in pythoncv is a numpy.ndarray object, which has the shape of (height, width, channel).
@@ -18,15 +21,37 @@ class CVImage(np.ndarray):
         then: Apply a function to the CVImage object.
     """
 
-    # make CVImage can be converted to numpy.ndarray by np.array
-    def __array__(self, dtype=None, **kwargs):
-        return self.view(np.ndarray).astype(dtype)
-
     @classmethod
     def from_numpy(cls, x: np.ndarray):
+        """ Create a CVImage object from a numpy.ndarray object.
+
+        Args:
+            x:
+                A numpy.ndarray object. The shape of the array should be (height, width, channel).
+                The channel of the image is RGB, which is different from the channel of the image in OpenCV,
+                but the same as the channel of the image in PIL and Tensorflow.
+        Returns:
+            A CVImage object.
+        """
         return x.view(cls)
 
-    def then(self, fn):
+    def to_numpy(self, dtype=None, **kwargs) -> np.ndarray:
+        """ Convert the CVImage object to a numpy.ndarray object.
+
+        Args:
+            dtype: Data type of the returned array.
+            **kwargs: Other arguments.
+
+        Returns:
+            A numpy.ndarray object.
+
+        """
+        return self.view(np.ndarray).astype(dtype)
+
+    def __array__(self, dtype=None, **kwargs) -> np.ndarray:
+        return self.to_numpy(dtype, **kwargs)
+
+    def then(self, fn: Callable[..., TFunctionOutput]) -> TFunctionOutput:
         return fn(self)
 
 
