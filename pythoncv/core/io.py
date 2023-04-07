@@ -18,18 +18,16 @@ class CVImage(np.ndarray):
         then: Apply a function to the CVImage object.
     """
 
+    # make CVImage can be converted to numpy.ndarray by np.array
+    def __array__(self, dtype=None, **kwargs):
+        return self.view(np.ndarray).astype(dtype)
+
     @classmethod
     def from_numpy(cls, x: np.ndarray):
         return x.view(cls)
 
     def then(self, fn):
         return fn(self)
-
-    def __repr__(self):
-        return f"CVImage({super().__repr__()})"
-
-    def __str__(self):
-        return f"CVImage({super().__str__()})"
 
 
 class CVVideo(metaclass=ABCMeta):

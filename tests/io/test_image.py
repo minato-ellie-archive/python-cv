@@ -96,6 +96,19 @@ def test_write_image_to_file():
 
     image = read_image('demos/sample.jpg')
     with tempfile.TemporaryDirectory() as tmpdir:
+        assert type(image) == CVImage
+        write_image_to_file(image, tmpdir + '/sample.jpg')
+        image = read_image(tmpdir + '/sample.jpg')
+        assert image.shape[2] == 3
+
+        ref_image = np.array(Image.open('demos/sample.jpg'))
+        assert np.allclose(image, ref_image, atol=10)
+
+    image = read_image('demos/sample.jpg')
+    with tempfile.TemporaryDirectory() as tmpdir:
+        image = np.array(image)
+        assert type(image) == np.ndarray
+
         write_image_to_file(image, tmpdir + '/sample.jpg')
         image = read_image(tmpdir + '/sample.jpg')
         assert image.shape[2] == 3
