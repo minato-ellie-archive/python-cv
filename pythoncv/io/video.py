@@ -1,18 +1,13 @@
 import os
 from abc import ABCMeta, abstractmethod
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 
-import cv2
+import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.types import (
-    VideoCaptureProperties,
-    VideoWriterProperties,
-    CaptureBackends,
-    CAPTURE_BACKEND_DICT,
-    FourCC,
-)
 from pythoncv.io.base import BaseVideo, BaseVideoWriter
+from pythoncv.types import (CAPTURE_BACKEND_DICT, CaptureBackends, FourCC, VideoCaptureProperties,
+                            VideoWriterProperties)
 
 
 def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
@@ -27,7 +22,7 @@ def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
     Returns:
         A wrapper object, which can be used to get and set properties of the VideoCapture object.
     """
-    properties = VideoCaptureProperties()
+    properties = VideoCaptureProperties()  # type: ignore
 
     def __getattribute__(self, item):
         if item in properties.__fields__.keys():
@@ -248,8 +243,8 @@ def read_video_from_url(
     return Video(url, backend=backend)
 
 
-def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterProperties:
-    properties = VideoWriterProperties()
+def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterProperties:  # type: ignore
+    properties = VideoWriterProperties()  # type: ignore
 
     def __getattribute__(self, item):
         if item in properties.__fields__.keys():

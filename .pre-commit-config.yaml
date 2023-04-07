@@ -11,27 +11,23 @@ repos:
 
 -   repo: local
     hooks:
-    -   id: lint
-        name: Lint
-        entry: nox
-        args: ['-s', 'lint']
+    -   id: yapf
+        name: Format with YAPF
+        entry: poetry run yapf
         language: system
         types: [python]
-        pass_filenames: false
-        always_run: true
+        args: [--in-place, --recursive, --parallel]
 
-    -   id: test
-        name: Test
-        entry: nox
-        args: ['-s', 'unit_tests']
+    -   id: flake8
+        name: Check with Flake8
+        entry: poetry run flake8
+        language: system
+        pass_filenames: true
+        types: [python]
+        args: [--count]
+
+    -   id: mypy
+        name: Validate types with MyPy
+        entry: poetry run mypy
         language: system
         types: [python]
-        pass_filenames: false
-
-    -   id: docs
-        name: Docs
-        entry: nox
-        args: ['-s', 'build_docs']
-        language: system
-        types: [file, python]
-        pass_filenames: false

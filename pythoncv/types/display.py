@@ -1,6 +1,6 @@
 from typing import Literal
 
-import cv2
+import cv2  # type: ignore
 
 WINDOW_FLAGS_DICT = {
     'normal': cv2.WINDOW_NORMAL,
