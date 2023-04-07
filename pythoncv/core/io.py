@@ -2,10 +2,29 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
-from pythoncv.types import VideoCaptureProperties
+from pythoncv.core.types import VideoCaptureProperties
 
 
-class BaseVideo(metaclass=ABCMeta):
+class CVImage(np.ndarray):
+    """ A Monad for numpy.ndarray.
+
+    """
+
+    @classmethod
+    def from_numpy(cls, x: np.ndarray):
+        return x.view(cls)
+
+    def then(self, fn):
+        return fn(self)
+
+    def __repr__(self):
+        return f"CVImage({super().__repr__()})"
+
+    def __str__(self):
+        return f"CVImage({super().__str__()})"
+
+
+class CVVideo(metaclass=ABCMeta):
     """Base class for video.
 
     A video in pythoncv is a generator, which yields a frame(a numpy.ndarray object) each time.
@@ -28,24 +47,24 @@ class BaseVideo(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def __next__(self):
-        ...
+    def __next__(self) -> CVImage:
+        ...  # pragma: no cover
 
     def __iter__(self):
         return self
 
     def __len__(self):
-        return NotImplemented
+        return NotImplemented  # pragma: no cover
 
     @property
     @abstractmethod
     def fps(self) -> float:
-        ...
+        ...  # pragma: no cover
 
     @fps.setter
     @abstractmethod
     def fps(self, value: float):
-        ...
+        ...  # pragma: no cover
 
     @property
     def wait_time(self) -> float:
@@ -58,36 +77,4 @@ class BaseVideo(metaclass=ABCMeta):
     @property
     @abstractmethod
     def info(self) -> VideoCaptureProperties:
-        ...
-
-
-class BaseVideoWriter(metaclass=ABCMeta):
-    """Base class for writer.
-
-    Notes:
-        Image in pythoncv shoule be a numpy.ndarray object, which has the shape of (height, width, channel).
-        The channel of the image is RGB, which is different from the channel of the image in OpenCV,
-        but the same as the channel of the image in PIL and Tensorflow.
-
-    Args:
-        path: Path to the video file.
-        fps: Frames per second.
-        frame_size: Size of the video frame.
-        is_color: Whether the video is color or not.
-
-    Methods:
-        write: Write a frame to the video.
-    """
-
-    @abstractmethod
-    def write(self, frame: np.ndarray):
-        """Write a frame to the video.
-
-        Args:
-            frame: Frame to write.
-
-        Raises:
-            TypeError: If frame is not a numpy.ndarray object.
-            ValueError: If the shape of frame is not (height, width, channel).
-        """
-        ...
+        ...  # pragma: no cover

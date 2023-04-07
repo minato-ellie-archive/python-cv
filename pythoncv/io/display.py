@@ -5,8 +5,8 @@ from typing import Literal, Optional, Tuple, Union
 import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.io.base import BaseVideoWriter
-from pythoncv.types.display import WINDOW_FLAGS_DICT, WindowFlags
+from pythoncv.io.video import BaseVideoWriter
+from pythoncv.core.types import WINDOW_FLAGS_DICT, WindowFlags
 
 
 class VideoWindow(BaseVideoWriter):

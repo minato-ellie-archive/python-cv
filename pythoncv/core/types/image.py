@@ -2,6 +2,13 @@ from typing import Literal
 
 import cv2  # type: ignore
 
+__all__ = [
+    'IMAGE_READ_FLAG_DICT',
+    'ImageReadFlags',
+    'IMAGE_WRITE_FLAG_DICT',
+    'ImageWriteFlags',
+]
+
 IMAGE_READ_FLAG_DICT = {
     'unchanged': cv2.IMREAD_UNCHANGED,
     'grayscale': cv2.IMREAD_GRAYSCALE,
@@ -18,7 +25,7 @@ IMAGE_READ_FLAG_DICT = {
     ('color', 8): cv2.IMREAD_REDUCED_COLOR_8,
 }
 
-ImageReadFlag = Literal['unchanged', 'grayscale', 'color',]
+ImageReadFlags = Literal['unchanged', 'grayscale', 'color',]
 
 IMAGE_WRITE_FLAG_DICT = {
     'jpeg': cv2.IMWRITE_JPEG_QUALITY,
@@ -28,4 +35,4 @@ IMAGE_WRITE_FLAG_DICT = {
     'exr': cv2.IMWRITE_EXR_TYPE,
 }
 
-ImageWriteFlag = Literal['jpeg', 'png', 'webp', 'tiff', 'exr',]
+ImageWriteFlags = Literal['jpeg', 'png', 'webp', 'tiff', 'exr',]

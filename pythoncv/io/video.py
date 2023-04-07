@@ -5,9 +5,9 @@ from typing import Optional, Tuple, Union
 import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.io.base import BaseVideo, BaseVideoWriter
-from pythoncv.types import (CAPTURE_BACKEND_DICT, CaptureBackends, FourCC, VideoCaptureProperties,
-                            VideoWriterProperties)
+from pythoncv.core.io import CVVideo, CVImage
+from pythoncv.core.types import (CAPTURE_BACKEND_DICT, CaptureBackends, FourCC, VideoCaptureProperties,
+                                 VideoWriterProperties)
 
 
 def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
@@ -55,7 +55,7 @@ def _generate_capture_info_wrapper(cap: cv2.VideoCapture):
         })()
 
 
-class Video(BaseVideo):
+class VideoReader(CVVideo):
     """Pythonic API for video.
 
     Notes:
@@ -116,10 +116,10 @@ class Video(BaseVideo):
     def info(self) -> VideoCaptureProperties:
         return self._info
 
-    def __next__(self) -> np.ndarray:
+    def __next__(self) -> CVImage:
         ret, frame = self._cap.read()
         if ret:
-            return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB).view(CVImage)
         else:
             raise StopIteration
 
@@ -137,7 +137,7 @@ class Video(BaseVideo):
 def read_video_from_device(
     device: int,
     backend: CaptureBackends = "auto",
-) -> Video:
+) -> VideoReader:
     """Read video from a device.
 
     Args:
@@ -173,13 +173,13 @@ def read_video_from_device(
     if device < 0:
         raise ValueError(f"device must be a positive integer, not {device}")
 
-    return Video(device, backend=backend)
+    return VideoReader(device, backend=backend)
 
 
 def read_video_from_file(
     path: Union[str, os.PathLike],
     backend: CaptureBackends = "auto",
-) -> Video:
+) -> VideoReader:
     """Read video from a file.
 
     Args:
@@ -210,13 +210,13 @@ def read_video_from_file(
     if not os.path.isfile(path):
         raise FileNotFoundError(f"file not found: {os.path.abspath(path)}")
 
-    return Video(path, backend=backend)
+    return VideoReader(path, backend=backend)
 
 
 def read_video_from_url(
     url: str,
     backend: CaptureBackends = "auto",
-) -> Video:
+) -> VideoReader:
     """Read video from a url.
 
     Args:
@@ -240,7 +240,7 @@ def read_video_from_url(
     if not isinstance(url, str):
         raise TypeError(f"url must be a string, not {type(url)}")
 
-    return Video(url, backend=backend)
+    return VideoReader(url, backend=backend)
 
 
 def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterProperties:  # type: ignore
@@ -274,6 +274,38 @@ def _generate_writer_info_wrapper(writer: cv2.VideoWriter) -> VideoWriterPropert
             '__setattr__': __setattr__,
             '__repr__': __repr__,
         })()
+
+
+class BaseVideoWriter(metaclass=ABCMeta):
+    """Base class for writer.
+
+    Notes:
+        Image in pythoncv shoule be a numpy.ndarray object, which has the shape of (height, width, channel).
+        The channel of the image is RGB, which is different from the channel of the image in OpenCV,
+        but the same as the channel of the image in PIL and Tensorflow.
+
+    Args:
+        path: Path to the video file.
+        fps: Frames per second.
+        frame_size: Size of the video frame.
+        is_color: Whether the video is color or not.
+
+    Methods:
+        write: Write a frame to the video.
+    """
+
+    @abstractmethod
+    def write(self, frame: np.ndarray):
+        """Write a frame to the video.
+
+        Args:
+            frame: Frame to write.
+
+        Raises:
+            TypeError: If frame is not a numpy.ndarray object.
+            ValueError: If the shape of frame is not (height, width, channel).
+        """
+        ...  # pragma: no cover
 
 
 class VideoWriter(BaseVideoWriter):

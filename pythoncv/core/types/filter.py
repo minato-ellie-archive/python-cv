@@ -2,6 +2,11 @@ from typing import Literal
 
 import cv2  # type: ignore
 
+__all__ = [
+    'BORDER_TYPES_DICT',
+    'BorderTypes',
+]
+
 BORDER_TYPES_DICT = {
     'constant': cv2.BORDER_CONSTANT,
     'replicate': cv2.BORDER_REPLICATE,

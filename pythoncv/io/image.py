@@ -1,15 +1,16 @@
 import os
 from pathlib import Path
-from typing import Literal, Optional, Tuple, Union, Any
+from typing import Literal, Optional, Tuple, Union
 
 import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.types.image import (IMAGE_READ_FLAG_DICT, IMAGE_WRITE_FLAG_DICT, ImageReadFlag, ImageWriteFlag)
+from pythoncv.core.types import (IMAGE_READ_FLAG_DICT, IMAGE_WRITE_FLAG_DICT, ImageReadFlags, ImageWriteFlags)
+from pythoncv.core import CVImage
 
 
 def _image_read_flag_wrapper(
-    color_mode: ImageReadFlag,
+    color_mode: ImageReadFlags,
     reduce_ratio: Literal[None, 2, 4, 8] = None,
 ) -> int:
     assert color_mode in IMAGE_READ_FLAG_DICT, AttributeError(f"Invalid color_mode {color_mode}")
@@ -25,9 +26,9 @@ def _image_read_flag_wrapper(
 
 def read_image_from_file(
     filename: Union[str, Path],
-    color_mode: ImageReadFlag = 'unchanged',
+    color_mode: ImageReadFlags = 'unchanged',
     reduce_ratio: Literal[None, 2, 4, 8] = None,
-) -> np.ndarray:
+) -> CVImage:
     """Read image from file.
 
     Args:
@@ -55,14 +56,14 @@ def read_image_from_file(
 
     result = cv2.imread(str(filename), flag)
     assert result is not None, AttributeError(f"Failed to read image from {os.path.abspath(filename)}")
-    return result[..., ::-1]
+    return result[..., ::-1].view(CVImage)
 
 
 def read_image_from_bytes(
     b: bytes,
-    color_mode: ImageReadFlag = 'unchanged',
+    color_mode: ImageReadFlags = 'unchanged',
     reduce_ratio: Literal[None, 2, 4, 8] = None,
-) -> np.ndarray:
+) -> CVImage:
     """Read image from bytes.
 
     Args:
@@ -88,14 +89,14 @@ def read_image_from_bytes(
     flag = _image_read_flag_wrapper(color_mode, reduce_ratio)
     result = cv2.imdecode(np.frombuffer(b, np.uint8), flag)
     assert result is not None, AttributeError("Failed to read image from bytes")
-    return result[..., ::-1]
+    return result[..., ::-1].view(CVImage)
 
 
 def read_image(
     image: Union[bytes, str, Path],
-    color_mode: ImageReadFlag = 'unchanged',
+    color_mode: ImageReadFlags = 'unchanged',
     reduce_ratio: Literal[None, 2, 4, 8] = None,
-) -> np.ndarray:
+) -> CVImage:
     """Read image from file or bytes.
 
     Args:
@@ -128,7 +129,7 @@ def read_image(
 
 
 def _image_write_flag_wrapper(
-    type: Optional[ImageWriteFlag] = None,
+    type: Optional[ImageWriteFlags] = None,
     quality: Union[None, int, float] = None,
 ) -> Union[None, Tuple[int, Union[int, float]], Tuple[int, None]]:
     if type is None:
@@ -147,7 +148,7 @@ def write_image_to_file(
     image: np.ndarray,
     filename: Union[str, Path],
     *,
-    type: Optional[ImageWriteFlag] = None,
+    type: Optional[ImageWriteFlags] = None,
     quality: int = 95,
 ) -> None:
     """Write image to file.
@@ -181,7 +182,7 @@ def write_image_to_file(
 def write_image_to_bytes(
     image: np.ndarray,
     *,
-    type: Optional[ImageWriteFlag] = None,
+    type: Optional[ImageWriteFlags] = None,
     quality: int = 95,
 ) -> bytes:
     """Write image to bytes.

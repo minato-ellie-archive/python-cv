@@ -3,6 +3,14 @@ from typing import Literal
 import cv2  # type: ignore
 from pydantic import (BaseModel, Field, confloat, conint, root_validator, validator)
 
+__all__ = [
+    'VideoCaptureProperties',
+    'VideoWriterProperties',
+    'CAPTURE_BACKEND_DICT',
+    'CaptureBackends',
+    'FourCC',
+]
+
 
 class VideoCaptureProperties(BaseModel):  # type: ignore
     pos_msec: int = Field(None, alias='CAP_PROP_POS_MSEC', ge=0)
