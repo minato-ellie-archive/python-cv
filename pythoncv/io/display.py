@@ -6,7 +6,7 @@ import cv2  # type: ignore
 import numpy as np
 
 from pythoncv.io.base import BaseVideoWriter
-from pythoncv.types.display import WINDOW_FLAGS_DICT, WindowFlags
+from pythoncv.types import WINDOW_FLAGS_DICT, WindowFlags
 
 
 class VideoWindow(BaseVideoWriter):
