@@ -10,7 +10,7 @@ on:
       - release/*
 
 jobs:
-  reject:
+  pr-reject:
     runs-on: ubuntu-latest
     steps:
       - name: Reject PR to "main"

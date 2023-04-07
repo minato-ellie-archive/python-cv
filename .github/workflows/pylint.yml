@@ -15,7 +15,7 @@ on:
 
 
 jobs:
-  build:
+  lint-check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
