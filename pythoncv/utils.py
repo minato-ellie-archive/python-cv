@@ -73,6 +73,9 @@ def type_assert(**type_assertions):
 
     Warnings:
         `type_assert()` will not work, when using `Type` in `typing` package.
+
+    Raises:
+        TypeError: If the type of any of the function arguments is not as expected.
     """
 
     def decorator(func):
@@ -87,7 +90,10 @@ def type_assert(**type_assertions):
         for key in block_list:
             if key not in type_assertions:
                 warnings.warn(
-                    f"Type assertion must be set for '{key}' argument, when using Type in typing package.",
+                    f"Type assertion must be set for '{key}' argument, when using Type in typing package. "
+                    f"Find code in '{func.__module__}.{func.__name__}() function."
+                    f"(line {inspect.getsourcelines(func)[1]} "
+                    f"- {inspect.getsourcelines(func)[1] + len(inspect.getsourcelines(func)[0]) - 1})'",
                     SyntaxWarning,
                 )
                 del annotations[key]

@@ -2,7 +2,10 @@
 
 This module contains functions for blurring images.
 Every function in this module is like
-def function_name(x: np.ndarray, ...) -> np.ndarray:
+
+```python
+def function(x: np.ndarray, ..., *, inplace=False) -> np.ndarray: ...
+```
 
 Notes:
     Image in pythoncv shoule be a numpy.ndarray object, which has the shape of (height, width, channel).

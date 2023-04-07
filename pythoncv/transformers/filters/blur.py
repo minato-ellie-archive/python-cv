@@ -7,7 +7,7 @@ from pythoncv.utils import type_assert
 
 
 @type_assert(
-    ksize=(tuple, list),
+    ksize=(tuple, list, int),
     anchor=tuple,
     border_type=str,
 )
@@ -17,6 +17,11 @@ def box_blur(
         normalize: bool = True,
         border_type: BorderTypes = "reflect101",
 ) -> Filter:
+    if isinstance(ksize, int):
+        ksize = (ksize, ksize)
+    if len(ksize) != 2:
+        raise ValueError(f"Invalid ksize: {ksize}")
+
     if border_type not in BORDER_TYPES_DICT:
         raise ValueError(f"Invalid border type: {border_type}")
 
@@ -26,6 +31,7 @@ def box_blur(
 @type_assert(
     ksize=(tuple, list),
     anchor=tuple,
+    border_type=str,
 )
 def blur(ksize: Tuple[int, int] = (3, 3),
          anchor: Tuple[int, int] = (-1, -1), border_type: BorderTypes = "reflect101") -> Filter:
@@ -37,6 +43,8 @@ def blur(ksize: Tuple[int, int] = (3, 3),
 
 @type_assert(
     ksize=(tuple, list),
+    sigma_x=(int, float),
+    sigma_y=(int, float),
     border_type=str,
 )
 def gaussian_blur(ksize: Tuple[int, int] = (3, 3),
@@ -54,7 +62,10 @@ def median_blur(ksize: int = 3) -> Filter:
     return Filter.make(f.median_blur, ksize)
 
 
-@type_assert()
+@type_assert(
+    sigma_color=(int, float),
+    sigma_space=(int, float),
+)
 def bilateral_filter(
     d: int = 5,
     sigma_color: float = 75,
@@ -63,7 +74,7 @@ def bilateral_filter(
     return Filter.make(f.bilateral_filter, d, sigma_color, sigma_space)
 
 
-@type_assert()
+@type_assert(radius=(tuple, list))
 def stack_blur(radius: Tuple[int, int] = (3, 3),) -> Filter:
     return Filter.make(f.stack_blur, radius)
 
