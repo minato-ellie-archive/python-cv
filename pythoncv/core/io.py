@@ -8,6 +8,14 @@ from pythoncv.core.types import VideoCaptureProperties
 class CVImage(np.ndarray):
     """ A Monad for numpy.ndarray.
 
+    Notes:
+        Image in pythoncv is a numpy.ndarray object, which has the shape of (height, width, channel).
+        The channel of the image is RGB, which is different from the channel of the image in OpenCV,
+        but the same as the channel of the image in PIL and Tensorflow.
+
+    Methods:
+        from_numpy: Create a CVImage object from a numpy.ndarray object.
+        then: Apply a function to the CVImage object.
     """
 
     @classmethod
