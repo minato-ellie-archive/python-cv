@@ -1,17 +1,8 @@
-import os
 from abc import ABCMeta, abstractmethod
-from typing import Union, Optional, Tuple
 
-import cv2
 import numpy as np
 
-from pythoncv.types import (
-    VideoCaptureProperties,
-    VideoWriterProperties,
-    CaptureBackends,
-    CAPTURE_BACKEND_DICT,
-    FourCC,
-)
+from pythoncv.types import VideoCaptureProperties
 
 
 class BaseVideo(metaclass=ABCMeta):
@@ -58,20 +49,15 @@ class BaseVideo(metaclass=ABCMeta):
 
     @property
     def wait_time(self) -> float:
-        return 1 / self.fps if self.fps else None
+        return 1 / self.fps
 
     @wait_time.setter
     def wait_time(self, value: float):
-        self.fps = 1 / value if value else None
+        self.fps = 1 / value
 
     @property
     @abstractmethod
     def info(self) -> VideoCaptureProperties:
-        ...
-
-    @info.setter
-    @abstractmethod
-    def info(self, value):
         ...
 
 

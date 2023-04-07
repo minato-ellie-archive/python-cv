@@ -1,6 +1,6 @@
 from typing import Literal
 
-import cv2
+import cv2  # type: ignore
 
 IMAGE_READ_FLAG_DICT = {
     'unchanged': cv2.IMREAD_UNCHANGED,

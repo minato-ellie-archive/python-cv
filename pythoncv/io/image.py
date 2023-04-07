@@ -1,12 +1,11 @@
 import os
-from typing import Literal, Optional, Tuple
 from pathlib import Path
-from typing import Union
+from typing import Literal, Optional, Tuple, Union, Any
 
-import cv2
+import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.types.image import ImageReadFlag, IMAGE_READ_FLAG_DICT, IMAGE_WRITE_FLAG_DICT, ImageWriteFlag
+from pythoncv.types.image import (IMAGE_READ_FLAG_DICT, IMAGE_WRITE_FLAG_DICT, ImageReadFlag, ImageWriteFlag)
 
 
 def _image_read_flag_wrapper(
@@ -131,13 +130,13 @@ def read_image(
 def _image_write_flag_wrapper(
     type: Optional[ImageWriteFlag] = None,
     quality: Union[None, int, float] = None,
-) -> Union[None, Tuple[int, Optional[int]]]:
+) -> Union[None, Tuple[int, Union[int, float]], Tuple[int, None]]:
     if type is None:
         return None
     else:
         assert type in IMAGE_WRITE_FLAG_DICT, AttributeError(f"Invalid image type {type}")
 
-    flag = IMAGE_WRITE_FLAG_DICT[type]
+    flag: int = IMAGE_WRITE_FLAG_DICT[type]
     if type in ['webp', 'jpeg']:
         if quality is not None:
             return flag, quality

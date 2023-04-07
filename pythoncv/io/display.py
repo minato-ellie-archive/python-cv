@@ -1,8 +1,8 @@
 import uuid
-from typing import Union, Optional, Tuple, Literal
 import warnings
+from typing import Literal, Optional, Tuple, Union
 
-import cv2
+import cv2  # type: ignore
 import numpy as np
 
 from pythoncv.io.base import BaseVideoWriter
