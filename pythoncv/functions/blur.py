@@ -18,7 +18,7 @@ from typing import Tuple, Union
 import cv2  # type: ignore
 import numpy as np
 
-from pythoncv.types.filter import BORDER_TYPES_DICT, BorderTypes
+from pythoncv.core.types.filter import BORDER_TYPES_DICT, BorderTypes
 
 
 def _copy_if_not_inplace(x: np.ndarray, inplace: bool) -> np.ndarray:

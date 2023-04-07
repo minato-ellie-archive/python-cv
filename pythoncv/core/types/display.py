@@ -2,6 +2,12 @@ from typing import Literal
 
 import cv2  # type: ignore
 
+__all__ = [
+    'WINDOW_FLAGS_DICT',
+    'WINDOW_FLAGS_INVERSE_DICT',
+    'WindowFlags',
+]
+
 WINDOW_FLAGS_DICT = {
     'normal': cv2.WINDOW_NORMAL,
     'autosize': cv2.WINDOW_AUTOSIZE,

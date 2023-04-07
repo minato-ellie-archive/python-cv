@@ -1,8 +1,8 @@
 from typing import Tuple, Union
 
 import pythoncv.functions as f
-from pythoncv.transformers import Filter
-from pythoncv.types.filter import BORDER_TYPES_DICT, BorderTypes
+from pythoncv.core.transformer import Filter
+from pythoncv.core.types.filter import BORDER_TYPES_DICT, BorderTypes
 from pythoncv.utils import type_assert
 
 

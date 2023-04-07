@@ -6,9 +6,13 @@ from pythoncv.io.image import *
 def test_read_image_from_file():
     image = read_image_from_file('demos/sample.jpg')
     assert image.shape[2] == 3
+    assert isinstance(image, np.ndarray)
+    assert type(image) == CVImage
 
     image = read_image_from_file('demos/sample.jpg')
     ref_image = np.array(Image.open('demos/sample.jpg'))
+    assert isinstance(image, np.ndarray)
+    assert type(image) == CVImage
 
     assert np.all(image == ref_image)
 
@@ -30,6 +34,8 @@ def test_read_image_from_bytes():
     with open('demos/sample.jpg', 'rb') as f:
         image = read_image_from_bytes(f.read())
         assert image.shape[2] == 3
+        assert isinstance(image, np.ndarray)
+        assert type(image) == CVImage
 
     with open('demos/sample.jpg', 'rb') as f:
         ref_image = np.array(Image.open('demos/sample.jpg'))
@@ -39,6 +45,8 @@ def test_read_image_from_bytes():
     with open('demos/sample.jpg', 'rb') as f:
         image = read_image_from_bytes(f.read(), color_mode='grayscale')
         assert len(image.shape) == 2
+        assert isinstance(image, np.ndarray)
+        assert type(image) == CVImage
 
     with open('demos/sample.jpg', 'rb') as f:
         image = read_image_from_bytes(f.read(), color_mode='color', reduce_ratio=4)
@@ -54,6 +62,8 @@ def test_read_image_from_bytes():
 def test_read_image():
     image = read_image('demos/sample.jpg')
     assert image.shape[2] == 3
+    assert isinstance(image, np.ndarray)
+    assert type(image) == CVImage
 
     ref_image = np.array(Image.open('demos/sample.jpg'))
 

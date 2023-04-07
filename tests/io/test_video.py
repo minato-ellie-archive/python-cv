@@ -8,7 +8,7 @@ def test_read_video_form_device():
     """Test read video from device."""
     video = read_video_from_device(0, backend='d-show')
     assert video.info.frame_count is None
-    assert isinstance(video, Video)
+    assert isinstance(video, CVVideo)
     with pytest.raises(ValueError):
         len(video)
 
@@ -57,7 +57,7 @@ def test_video_exception():
 def test_read_video_from_file():
     """Test read video from file."""
     video = read_video_from_file('demos/sample.mp4')
-    assert isinstance(video, Video)
+    assert isinstance(video, CVVideo)
     assert len(video) > 0 and isinstance(len(video), int)
 
     count = 0
@@ -99,7 +99,7 @@ def test_read_video_from_url():
     """Test read video from url."""
     video = read_video_from_url(
         'https://mazwai.com/videvo_files/video/free/2018-12/small_watermarked/180607_A_124_preview.mp4')  # noqa: E501
-    assert isinstance(video, Video)
+    assert isinstance(video, CVVideo)
     assert len(video) > 0 and isinstance(len(video), int)
 
     count = 0
@@ -123,7 +123,7 @@ def test_read_video_from_url_exception():
 
     video = read_video_from_url(
         'https://mazwai.com/videvo_files/video/free/2018-12/small_watermarked/180607_A_124_preview.mp4')  # noqa: E501
-    assert isinstance(video, Video)
+    assert isinstance(video, CVVideo)
     assert len(video) > 0 and isinstance(len(video), int)
 
     count = 0
@@ -198,7 +198,7 @@ def test_illegal_video_info_properties():
 
     assert video.info.fps != 0
     assert video.fps == video.info.fps == video._cap.get(cv2.CAP_PROP_FPS)
-    assert video.fps == 1/video.wait_time
+    assert video.fps == 1 / video.wait_time
 
     with pytest.raises(RuntimeError):
         video.info.frame_width = 1280
