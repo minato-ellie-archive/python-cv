@@ -24,5 +24,6 @@ jobs:
           echo "github.head_ref != 'release/*': ${{ github.head_ref != 'release/*' }}"
           echo "github.head_ref != 'hotfix/*': ${{ github.head_ref != 'hotfix/*' }}"
           echo "github.head_ref != 'actions': ${{ github.head_ref != 'actions' }}"
+          echo "if: ${{ github.base_ref == 'main' }} && ${{ github.head_ref != 'develop' }} && ${{ github.head_ref != 'main' && github.head_ref != 'release/*' && github.head_ref != 'hotfix/*' && github.head_ref != 'actions' }}"
           echo "Pull requests to main must be from develop"
           exit 1
