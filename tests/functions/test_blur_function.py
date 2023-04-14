@@ -1,6 +1,6 @@
 import pytest
 
-from pythoncv.functions.blur import *
+from pythoncv.functions.filters import *
 
 
 def test_box_blur(mocker):
@@ -13,6 +13,7 @@ def test_box_blur(mocker):
 
     result = box_blur(arr, ksize=(3, 3), inplace=True)
     assert np.allclose(arr, result)
+    assert arr is result
     cv2.boxFilter.assert_called_with(arr, -1, (3, 3), arr, (-1, -1), True, cv2.BORDER_REFLECT_101)
 
 
@@ -26,6 +27,7 @@ def test_blur(mocker):
 
     result = blur(arr, ksize=(3, 3), inplace=True)
     assert np.allclose(arr, result)
+    assert arr is result
     cv2.blur.assert_called_with(arr, (3, 3), arr, (-1, -1), cv2.BORDER_REFLECT_101)
 
 
@@ -39,6 +41,7 @@ def test_gaussian_blur(mocker):
 
     result = gaussian_blur(arr, ksize=(3, 3), inplace=True)
     assert np.allclose(arr, result)
+    assert arr is result
     cv2.GaussianBlur.assert_called_with(arr, (3, 3), 0, arr, 0, cv2.BORDER_REFLECT_101)
 
 
@@ -52,6 +55,7 @@ def test_median_blur(mocker):
 
     result = median_blur(arr, ksize=3, inplace=True)
     assert np.allclose(arr, result)
+    assert arr is result
     cv2.medianBlur.assert_called_with(arr, 3, arr)
 
 
@@ -63,8 +67,7 @@ def test_bilateral_filter(mocker):
     cv2.bilateralFilter.assert_called_once()
     assert not np.allclose(arr, result)
 
-    with pytest.raises(NotImplementedError):
-        result = bilateral_filter(arr, d=5, inplace=True)
+    assert arr is not result
 
 
 def test_stack_blur(mocker):
@@ -98,5 +101,4 @@ def test_square_blur(mocker):
     assert cv2.sqrBoxFilter.call_count == 2
     assert cv2.sqrBoxFilter.call_args_list[0][0][2] == cv2.sqrBoxFilter.call_args_list[1][0][2]
 
-    with pytest.raises(NotImplementedError):
-        result = square_blur(arr, ksize=3, inplace=True)
+    assert arr is not result
